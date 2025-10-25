@@ -2,7 +2,7 @@ git add README.md
 # 🌌 DMDMX GitHub Pages
 
 Bienvenido a mi sitio personal alojado en **GitHub Pages**.  
-Aquí encontrarás mis proyectos, experimentos de IA y herramientas de accesibilidad creadas con ❤️ para ayudar a las personas.
+Aquí encontrarás mis proyectos, experimentos de IA y herramientas de accesibilidad creadas con 🚀para ayudar a las personas.
 
 ---
 
