@@ -1,12 +1,159 @@
-/* index.css */
+/* ===============================
+   🌙 DMDMX - Style.css (Dark Mode)
+   Inspirado en Dracula Theme
+   Autor: Sam (DMD SmartKeting)
+   =============================== */
 
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
+:root {
+  /* 🎨 Paleta Dracula */
+  --bg-color: #1e1f29;
+  --bg-secondary: #282a36;
+  --text-color: #f8f8f2;
+  --accent-purple: #bd93f9;
+  --accent-cyan: #8be9fd;
+  --accent-green: #50fa7b;
+  --accent-pink: #ff79c6;
+  --accent-orange: #ffb86c;
+  --border-color: #44475a;
+  --font-main: 'Inter', 'Roboto', sans-serif;
 }
 
-#mapa-contenedor {
-    width: 100%;
-    height: 100vh; /* Full viewport height */
-    position: relative;
+/* 🌎 Reset básico */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-main);
+  line-height: 1.6;
+  scroll-behavior: smooth;
+}
+
+/* 🧭 Contenedores y secciones */
+.container {
+  width: 90%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 0;
+}
+
+header {
+  background: var(--bg-secondary);
+  padding: 1.5rem 0;
+  border-bottom: 1px solid var(--border-color);
+  text-align: center;
+}
+
+header h1 {
+  color: var(--accent-purple);
+  font-size: 2rem;
+  letter-spacing: 1px;
+}
+
+nav a {
+  color: var(--accent-cyan);
+  text-decoration: none;
+  margin: 0 10px;
+  transition: color 0.3s;
+}
+
+nav a:hover {
+  color: var(--accent-green);
+}
+
+/* 🧱 Tarjetas o bloques de contenido */
+.card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 1.5rem;
+  margin: 1rem 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0 10px var(--accent-purple);
+}
+
+.card h2 {
+  color: var(--accent-pink);
+  margin-bottom: 0.5rem;
+}
+
+/* 🔘 Botones */
+button,
+.btn {
+  background: var(--accent-purple);
+  color: var(--text-color);
+  border: none;
+  padding: 0.8rem 1.2rem;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+button:hover,
+.btn:hover {
+  background: var(--accent-green);
+  color: #000;
+  transform: scale(1.03);
+}
+
+/* 🖋️ Inputs y formularios */
+input, textarea, select {
+  background: var(--bg-secondary);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 0.6rem;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 5px var(--accent-cyan);
+}
+
+/* 📱 Responsive */
+@media (max-width: 768px) {
+  header h1 {
+    font-size: 1.6rem;
+  }
+
+  nav a {
+    display: block;
+    margin: 8px 0;
+  }
+
+  .container {
+    width: 95%;
+    padding: 1rem 0;
+  }
+}
+
+/* ✨ Animaciones simples */
+.fade-in {
+  animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 🦶 Footer */
+footer {
+  text-align: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid var(--border-color);
+  color: var(--accent-orange);
+  font-size: 0.9rem;
 }
