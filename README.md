@@ -34,4 +34,4 @@ Este sitio sirve como espacio de demostración y desarrollo de ideas centradas e
 1. Clona el repositorio:
    ```bash
    git clone https://github.com/dmdmx/dmdmx.github.io.git
-git push README.md
+   
