@@ -1,0 +1,12 @@
+/* index.css */
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+#mapa-contenedor {
+    width: 100%;
+    height: 100vh; /* Full viewport height */
+    position: relative;
+}
