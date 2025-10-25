@@ -1,4 +1,4 @@
-git add README.md
+
 # 🌌 DMDMX GitHub Pages
 
 Bienvenido a mi sitio personal alojado en **GitHub Pages**.  
