@@ -9,7 +9,8 @@ para ayudar a las personas.
 
 ## 🧠 Tecnologías
 - HTML5  
-- CSS3 (🎨 estilo oscuro tipo *Drácula*)  
+- CSS3 (🎨 estilo oscuro)
+
 - JavaScript (si aplica)
 
 ---
