@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mi Primer Mapa Leaflet</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
+          integrity="sha256-p4NxAoJBhIINfBG9zR0PV3geCSXhMX6CNsAigIuMAWVs="
+          crossorigin=""/>
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="mapa-contenedor"></div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20n6sBw9Sotx5qT9BfBlU3xI0N0oHk0gY79I4Y+gEw4="
+            crossorigin=""></script>
+            
+    <script>
+        // Coordenadas del centro del mapa y nivel de zoom
+        var centro = [27.9216,110.9181];
+        var zoomInicial = 13;
+
+        // Inicializar el mapa
+        var map = L.map('mapa-contenedor').setView(centro, zoomInicial);
+
+        // Añadir una capa de OpenStreetMap (el mapa base)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Añadir un marcador de ejemplo
+        L.marker(centro)
+            .addTo(map)
+            .bindPopup("¡Hola, mundo de los mapas!").openPopup();
+    </script>
+</body>
+</html>
