@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lector de Texto (TTS) Multilingüe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos personalizados para la tipografía */
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Color de fondo claro y moderno */
+        }
+    </style>
+</head>
+<body class="p-4 sm:p-8 min-h-screen flex items-center justify-center">
+
+    <div id="tts-app" class="w-full max-w-3xl bg-white shadow-2xl rounded-xl p-6 sm:p-8 transition-all duration-300">
+        <!-- Título y Descripción -->
+        <h1 class="text-3xl font-extrabold text-gray-800 mb-2 border-b-2 pb-2 border-indigo-100">
+            Lector de Texto a Voz 🗣️
+        </h1>
+        <p class="text-gray-600 mb-6">
+            Pega o escribe tu texto y selecciona el idioma para escucharlo.
+        </p>
+
+        <!-- Área de Texto -->
+        <textarea id="text-input" 
+                  placeholder="Pega aquí el texto que deseas escuchar (Español, Inglés, etc.)."
+                  class="w-full h-40 p-4 border-2 border-indigo-300 rounded-lg focus:ring-4 focus:ring-indigo-500 focus:border-indigo-500 transition-all duration-200 resize-none text-gray-700 text-base mb-4"
+        ></textarea>
+
+        <!-- Controles de Voz -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            
+            <!-- Selector de Idioma -->
+            <div class="col-span-1">
+                <label for="language-select" class="block text-sm font-medium text-gray-700 mb-1">Idioma / Voz:</label>
+                <select id="language-select" 
+                        class="w-full p-2 border border-gray-300 rounded-lg focus:ring-indigo-500 focus:border-indigo-500 text-gray-800 shadow-sm"
+                        onchange="updateVoiceList()">
+                    <!-- Las opciones de idioma se llenarán con JavaScript -->
+                    <option value="es-ES">Español (España)</option>
+                    <option value="en-US">Inglés (EE. UU.)</option>
+                </select>
+            </div>
+            
+            <!-- Control de Velocidad -->
+            <div class="col-span-1">
+                <label for="rate-range" class="block text-sm font-medium text-gray-700 mb-1">
+                    Velocidad (<span id="rate-value">1.0</span>):
+                </label>
+                <input type="range" id="rate-range" min="0.5" max="2" value="1" step="0.1" 
+                       class="w-full h-2 bg-indigo-100 rounded-lg appearance-none cursor-pointer range-lg"
+                       oninput="document.getElementById('rate-value').textContent = this.value">
+            </div>
+
+            <!-- Control de Tono -->
+            <div class="col-span-1">
+                <label for="pitch-range" class="block text-sm font-medium text-gray-700 mb-1">
+                    Tono (<span id="pitch-value">1.0</span>):
+                </label>
+                <input type="range" id="pitch-range" min="0" max="2" value="1" step="0.1" 
+                       class="w-full h-2 bg-indigo-100 rounded-lg appearance-none cursor-pointer range-lg"
+                       oninput="document.getElementById('pitch-value').textContent = this.value">
+            </div>
+        </div>
+        
+        <!-- Botones de Acción -->
+        <div class="flex flex-col sm:flex-row gap-4">
+            <button id="speak-button"
+                    class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-indigo-700 transition duration-150 ease-in-out transform hover:scale-[1.02]"
+                    onclick="speakText()">
+                ▶️ Leer Texto
+            </button>
+            <button id="stop-button"
+                    class="flex-1 bg-red-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hover:bg-red-600 transition duration-150 ease-in-out transform hover:scale-[1.02]"
+                    onclick="cancelSpeech()">
+                ⏹️ Detener
+            </button>
+        </div>
+        
+        <!-- Área de Mensajes -->
+        <div id="message-box" class="mt-6 p-3 bg-yellow-100 text-yellow-800 rounded-lg hidden">
+            El lector de voz está listo.
+        </div>
+
+    </div>
+
+    <script>
+        // Inicialización de la API de Síntesis de Voz
+        const synth = window.speechSynthesis;
+        let voices = [];
+
+        const textInput = document.getElementById('text-input');
+        const languageSelect = document.getElementById('language-select');
+        const rateRange = document.getElementById('rate-range');
+        const pitchRange = document.getElementById('pitch-range');
+        const messageBox = document.getElementById('message-box');
+        const speakButton = document.getElementById('speak-button');
+        const stopButton = document.getElementById('stop-button');
+
+        // Función para poblar la lista de voces
+        function populateVoiceList() {
+            voices = synth.getVoices().sort((a, b) => {
+                const aname = a.name.toUpperCase();
+                const bname = b.name.toUpperCase();
+                if (aname < bname) return -1;
+                if (aname > bname) return +1;
+                return 0;
+            });
+
+            // Limpiar la lista de selección actual
+            languageSelect.innerHTML = '';
+            
+            // Mapear voces únicas por idioma (locale)
+            const uniqueLangs = new Map();
+            voices.forEach(voice => {
+                // Si el idioma no se ha agregado, o si la voz actual es una voz "predeterminada" o de alta calidad, la añadimos.
+                if (!uniqueLangs.has(voice.lang) || voice.default || voice.name.includes('Google') || voice.name.includes('Microsoft')) {
+                    uniqueLangs.set(voice.lang, voice);
+                }
+            });
+
+            // Crear las opciones para el selector
+            uniqueLangs.forEach((voice, lang) => {
+                const option = document.createElement('option');
+                option.value = lang;
+                option.textContent = `${lang} (${voice.name})`;
+                languageSelect.appendChild(option);
+            });
+
+            // Establecer Español e Inglés como predeterminados si están disponibles
+            if (!languageSelect.value) {
+                languageSelect.value = voices.find(v => v.lang.startsWith('es')).lang || 'es-ES';
+            }
+            if (!languageSelect.querySelector('option[value^="en"]')) {
+                 const enVoice = voices.find(v => v.lang.startsWith('en'));
+                 if(enVoice) {
+                    const option = document.createElement('option');
+                    option.value = enVoice.lang;
+                    option.textContent = `${enVoice.lang} (${enVoice.name})`;
+                    languageSelect.appendChild(option);
+                 }
+            }
+            
+            showMessage('Voces cargadas. ¡Listo para leer!');
+        }
+
+        // Evento para cargar las voces tan pronto como estén disponibles
+        if (synth.onvoiceschanged !== undefined) {
+            synth.onvoiceschanged = populateVoiceList;
+        }
+
+        // Llamar a populateVoiceList si las voces ya están disponibles
+        if (synth.getVoices().length > 0) {
+            populateVoiceList();
+        }
+
+        // Función principal para leer el texto
+        function speakText() {
+            if (synth.speaking) {
+                cancelSpeech(); // Detiene cualquier lectura anterior
+            }
+
+            const text = textInput.value.trim();
+            if (text === '') {
+                showMessage('⚠️ Por favor, escribe o pega texto para leer.', 'bg-red-100 text-red-800');
+                return;
+            }
+
+            const utterThis = new SpeechSynthesisUtterance(text);
+            
+            // Encontrar la voz basada en el idioma seleccionado
+            const selectedLang = languageSelect.value;
+            const selectedVoice = voices.find(voice => voice.lang === selectedLang);
+
+            if (selectedVoice) {
+                utterThis.voice = selectedVoice;
+            } else {
+                 // Si no encuentra la voz exacta, usa el primer idioma coincidente como fallback
+                 utterThis.voice = voices.find(voice => voice.lang.startsWith(selectedLang.substring(0, 2)));
+            }
+            
+            utterThis.pitch = parseFloat(pitchRange.value);
+            utterThis.rate = parseFloat(rateRange.value);
+            
+            utterThis.onstart = () => {
+                speakButton.disabled = true;
+                stopButton.disabled = false;
+                showMessage(`🎧 Leyendo en ${utterThis.voice ? utterThis.voice.name : selectedLang}...`, 'bg-green-100 text-green-800');
+            };
+
+            utterThis.onend = () => {
+                speakButton.disabled = false;
+                stopButton.disabled = true;
+                showMessage('✅ Lectura terminada.', 'bg-yellow-100 text-yellow-800');
+            };
+
+            utterThis.onerror = (event) => {
+                speakButton.disabled = false;
+                stopButton.disabled = true;
+                showMessage(`❌ Error en la síntesis de voz: ${event.error}`, 'bg-red-100 text-red-800');
+                console.error('Speech Synthesis Error:', event.error);
+            };
+
+            synth.speak(utterThis);
+        }
+
+        // Función para detener la lectura
+        function cancelSpeech() {
+            if (synth.speaking) {
+                synth.cancel();
+                speakButton.disabled = false;
+                stopButton.disabled = true;
+                showMessage('🛑 Lectura detenida.', 'bg-yellow-100 text-yellow-800');
+            }
+        }
+
+        // Función para mostrar mensajes de estado
+        function showMessage(message, classes = 'bg-yellow-100 text-yellow-800') {
+            messageBox.textContent = message;
+            messageBox.className = `mt-6 p-3 rounded-lg ${classes}`;
+            messageBox.style.display = 'block';
+        }
+        
+        // Inicializar botones deshabilitados si el sintetizador no está listo
+        if (!synth) {
+            showMessage('Tu navegador no es compatible con la Síntesis de Voz.', 'bg-red-100 text-red-800');
+            speakButton.disabled = true;
+            stopButton.disabled = true;
+        } else {
+            stopButton.disabled = true;
+        }
+
+    </script>
+</body>
+</html>
